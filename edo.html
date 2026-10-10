@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e0f11">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Edo">
+<title>Edo · Training</title>
+<style>
+:root{
+  --bg:#0e0f11; --card:#17191d; --tx:#f1f0ec; --mu:#8b9099; --line:#2a2e35; --field:#0e0f11;
+  --ac:#ff6a3d;
+  --cond:Bahnschrift,"DIN Alternate","Roboto Condensed","Arial Narrow",sans-serif;
+  --sys:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --padx:max(16px, env(safe-area-inset-left));
+  --padr:max(16px, env(safe-area-inset-right));
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--tx);font-family:var(--sys);font-size:16px;line-height:1.4;
+  overflow-x:hidden;padding-bottom:calc(32px + env(safe-area-inset-bottom));-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-action:manipulation}
+.n{font-family:var(--cond);font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+
+/* header */
+header{position:sticky;top:0;z-index:10;background:var(--bg);
+  padding:calc(10px + env(safe-area-inset-top)) var(--padr) 0 var(--padx)}
+.hrow{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-bottom:10px}
+.wk{font-size:44px;line-height:.95;text-transform:uppercase}
+.wk small{font-size:16px;color:var(--ac);margin-left:8px;vertical-align:middle;letter-spacing:.06em}
+.tn{text-align:right;color:var(--mu);font-size:13px;letter-spacing:.08em;text-transform:uppercase;line-height:1.1}
+.tn b{display:block;color:var(--tx);font-size:30px;letter-spacing:0}
+.bar{height:4px;background:var(--line);margin:0 calc(-1 * var(--padr)) 0 calc(-1 * var(--padx))}
+.bar i{display:block;height:100%;width:0;background:var(--ac);transition:width .3s ease}
+
+main{padding:14px var(--padr) 0 var(--padx)}
+
+/* week + day pickers */
+.pick{display:grid;gap:8px;margin-bottom:10px}
+.pick button{min-height:52px;border-radius:10px;background:var(--card);color:var(--mu);
+  font-family:var(--cond);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums;position:relative;
+  border:2px solid transparent;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pick button small{display:block;font-size:10px;letter-spacing:.08em;margin-top:-2px}
+.pick button.on{background:var(--ac);color:var(--bg)}
+.days button{font-size:16px;letter-spacing:.04em;text-transform:uppercase;color:var(--dc);border-color:transparent}
+.days button.on{background:var(--dc);color:var(--bg)}
+.days button .dot{position:absolute;top:7px;right:7px;width:8px;height:8px;border-radius:50%;background:var(--dc)}
+.days button.on .dot{background:var(--bg)}
+
+/* collapsible */
+details.sec{background:var(--card);border-radius:12px;margin:14px 0}
+details.sec summary{list-style:none;min-height:52px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;font-family:var(--cond);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.05em;cursor:pointer}
+details.sec summary::-webkit-details-marker{display:none}
+details.sec summary::after{content:"+";font-size:26px;color:var(--ac);line-height:1}
+details.sec[open] summary::after{content:"–"}
+details.sec ul{list-style:none;padding:0 16px 14px}
+details.sec li{padding:10px 0;border-top:1px solid var(--line);color:var(--mu);font-size:15px}
+details.sec li b{display:block;color:var(--tx);font-weight:600;font-size:16px}
+
+/* section label */
+.sl{font-family:var(--cond);font-weight:700;font-size:14px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--mu);margin:22px 2px 8px}
+.sl span{text-transform:none;letter-spacing:0;font-family:var(--sys);font-weight:400;font-size:13px;margin-left:6px}
+
+/* exercise card */
+.card{background:var(--card);border-radius:14px;padding:14px 14px 10px;margin-bottom:10px}
+.ttl{display:flex;gap:10px;align-items:baseline}
+.ttl .num{color:var(--ac);font-size:15px}
+.ttl h3{font-size:17px;font-weight:600;line-height:1.25;min-width:0;overflow-wrap:anywhere}
+.tgt{display:flex;align-items:baseline;flex-wrap:wrap;gap:0 12px;margin-top:4px}
+.tgt .big{font-size:48px;line-height:1}
+.tgt .big small{font-size:20px;color:var(--mu);margin-left:2px}
+.tgt .load{font-size:30px;color:var(--ac);line-height:1}
+.tgt .txt{font-size:22px;line-height:1.15;margin-top:4px}
+.tgt .tbp{font-size:26px;color:var(--mu);line-height:1.1;margin-top:4px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{font-size:13px;color:var(--tx);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+.tag em{font-style:normal;color:var(--mu);margin-right:4px}
+.note{color:var(--mu);font-size:14px;margin-top:8px}
+.sets{margin-top:10px}
+.row{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px solid var(--line)}
+.row .si{width:22px;flex:none;color:var(--mu);font-size:18px;text-align:center}
+.f{flex:1 1 0;min-width:0;position:relative;display:block}
+.f input{width:100%;height:52px;border-radius:10px;border:1px solid var(--line);background:var(--field);color:var(--tx);
+  font-family:var(--cond);font-weight:700;font-size:24px;font-variant-numeric:tabular-nums;padding:0 40px 0 12px;
+  -webkit-appearance:none;appearance:none;outline:none}
+.f input:focus{border-color:var(--ac)}
+.f input::placeholder{color:#555b64;opacity:1}
+.f span{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--mu);pointer-events:none;
+  letter-spacing:.04em;text-transform:uppercase}
+.row .tl{flex:1;min-width:0;font-size:20px;color:var(--mu)}
+.tick{flex:none;width:56px;height:52px;border-radius:10px;border:2px solid var(--line);display:grid;place-items:center;color:var(--mu)}
+.tick svg{width:26px;height:26px}
+.row.done .tick{background:var(--ac);border-color:var(--ac);color:var(--bg)}
+.row.done .f input{color:var(--ac)}
+.row.done .tl{color:var(--tx)}
+.tgt .load.long{font-size:22px;line-height:1.15}
+.tgt .txt{font-size:20px}
+.row.x{gap:8px}
+.f.lab small{display:block;font-size:12px;color:var(--mu);letter-spacing:.04em;text-transform:uppercase;margin:0 0 4px 2px}
+.f.lab input{padding-right:12px}
+.wk{white-space:nowrap;font-size:clamp(32px,11vw,44px)}
+.wk small{font-size:14px}
+.tgt .txt.long{font-family:var(--sys);font-weight:600;font-size:16px;line-height:1.4}
+</style>
+</head>
+<body>
+<header>
+  <div class="hrow">
+    <div class="wk n" id="wk">SETT. 1</div>
+    <div class="tn n" id="tnl">Training<b id="tn">1</b></div>
+  </div>
+  <div class="bar"><i id="bar"></i></div>
+</header>
+<main id="app"></main>
+
+<script>
+/* =====================================================================
+   PLAN DATA — edit only this block
+   ---------------------------------------------------------------------
+   Scheme strings:  "4×8"  "3×8 /gamba"  "4×8 @ 65% · 65 kg"  (text after @ = load;
+                    a number followed by kg becomes the grey kg suggestion)
+                    "3×35\""  (timed)   "3×10-12" (range)   "—" = not in this week (hidden)
+                    any other text = shown as written
+   w: {1:"..", 2:"..", ...}  = per week      all: ".." = same every week
+   wn: {1:"..."} = note for one week only    note: "..." = note every week
+   tags: [["Label", "value" or {1:"..", 2:".."}]]
+   log: "kg" = kg + reps + tick   "tick" = tick only   "none" = no rows
+   extra: extra fields for the session, e.g. [["round","Round completati","numeric"]]
+   ===================================================================== */
+const CLIENT = "edo";
+const WEEKS = 8;
+const WEEK_LABELS = { 7: "Deload", 8: "Test" };
+const UI = { week: "SETT.", training: "Allenamento", warmup: "Riscaldamento", end: "Fine seduta",
+             tbp: "Da programmare", done: "Fatto", set: "Serie" };
+
+const DAYS = [
+  {
+    id: "a", label: "Forza A", color: "#ff6a3d",
+    warmup: [
+      ["Dynamic stretching gambe"],
+      ["Preparazione gomiti, spalle e polsi per la panca"],
+      ["3' cardio"]
+    ],
+    sections: [
+      { title: "FORZA – esercizi principali", items: [
+        { name: "Squat (2 serie di riscaldamento)", log: "kg",
+          w: { 1: "4×8 @ 65% · 65 kg", 2: "4×6 @ 70% · 70 kg", 3: "5×5 @ 75% · 75 kg", 4: "4×3 @ 80% · 80 kg",
+               5: "4×5 @ 72,5% · 72,5 kg", 6: "5×3 @ 82,5% · 82,5 kg", 7: "3×5 @ 70% · 70 kg", 8: "TEST" } },
+        { name: "Panca (2 serie di riscaldamento)", log: "kg",
+          w: { 1: "4×6 @ 65% · 57,5 kg", 2: "4×8 @ 65% · 57,5 kg", 3: "5×6 @ 70% · 62,5 kg", 4: "5×5 @ 75% · 67,5 kg",
+               5: "4×5 @ 72,5% · 65 kg", 6: "5×3 @ 80% · 72,5 kg", 7: "3×5 @ 65% · 57,5 kg", 8: "TEST" } }
+      ]},
+      { title: "ACCESSORI", items: [
+        { name: "Single leg RDL", log: "kg",
+          w: { 1: "3×8 /gamba", 2: "3×10 /gamba", 3: "3×10 /gamba", 4: "3×12 /gamba", 5: "3×10 /gamba (+carico)", 6: "3×12 /gamba", 7: "2×8 /gamba", 8: "—" } },
+        { name: "Shoulder press DB", log: "kg",
+          w: { 1: "3×10", 2: "3×10", 3: "3×12", 4: "3×12", 5: "3×10 (+carico)", 6: "3×12", 7: "2×10", 8: "—" } },
+        { name: "Dips", log: "kg",
+          w: { 1: "3×10", 2: "3×10", 3: "3×12", 4: "3×15", 5: "3×12", 6: "3×15", 7: "2×10", 8: "—" } },
+        { name: "Plank (30\" recupero)", log: "tick",
+          w: { 1: "3×35\"", 2: "4×35\"", 3: "3×40\"", 4: "4×40\"", 5: "3×45\"", 6: "4×45\"", 7: "3×40\"", 8: "—" } },
+        { name: "Russian twist con peso", log: "kg",
+          w: { 1: "3×30", 2: "3×30", 3: "3×30", 4: "3×30", 5: "3×30", 6: "3×30", 7: "3×30", 8: "—" } }
+      ]}
+    ],
+    end: []
+  },
+  {
+    id: "b", label: "Forza B", color: "#c6f24a",
+    warmup: [
+      ["3' cardio"],
+      ["Attivazione catena posteriore (good morning, hip bridge)"],
+      ["Attivazione gomiti e spalle (trazioni alla fronte)"]
+    ],
+    sections: [
+      { title: "FORZA – esercizi principali", items: [
+        { name: "Deadlift trap bar", log: "kg",
+          w: { 1: "4×8 @ 65%", 2: "4×6 @ 70%", 3: "5×5 @ 75%", 4: "4×3 @ 80%", 5: "4×5 @ 72,5%", 6: "5×3 @ 82,5%", 7: "3×5 @ 70%", 8: "TEST" } },
+        { name: "Trazioni zavorrate", log: "kg",
+          w: { 1: "4×7", 2: "5×6", 3: "4×5", 4: "5×5", 5: "4×6", 6: "5×4", 7: "3×5", 8: "TEST" } }
+      ]},
+      { title: "ACCESSORI", items: [
+        { name: "Renegade row", note: "Attiva il core e controlla bene il movimento", log: "kg",
+          w: { 1: "3×8 /lato", 2: "3×8 /lato", 3: "3×10 /lato", 4: "3×10 /lato", 5: "3×10 /lato (+carico)", 6: "3×12 /lato", 7: "2×8 /lato", 8: "—" } },
+        { name: "Curl bicipiti", log: "kg",
+          w: { 1: "3×10", 2: "3×12", 3: "3×12", 4: "3×12", 5: "3×10 (+carico)", 6: "3×12", 7: "2×10", 8: "—" } },
+        { name: "Face pulls", log: "kg",
+          w: { 1: "3×10", 2: "3×12", 3: "3×12", 4: "3×12", 5: "3×10 (+carico)", 6: "3×12", 7: "2×10", 8: "—" } }
+      ]},
+      { title: "METCON – AMRAP 9'", items: [
+        { name: "AMRAP 9'", log: "none",
+          w: { 1: "8 V-up\n12 cal RowErg\n10 box jump\n10 walking lunge",
+               2: "Con il coach",
+               3: "20 sit-up\n250 m SkiErg\n10 burpee\n10 m sled pull",
+               4: "Con il coach",
+               5: "10 toes to bar\n15 kettlebell swing\n5 burpee broad jump\n10 push-up",
+               6: "Con il coach",
+               7: "8 V-up\n12 cal RowErg\n10 box jump\n10 walking lunge",
+               8: "Settimana test – niente metcon" },
+          wn: { 7: "Ripeti sett. 1 (confronta i round)" },
+          extra: [["round", "Round completati", "numeric"]], extraSkip: [8] }
+      ]}
+    ],
+    end: []
+  },
+  {
+    id: "r", label: "Corsa", color: "#4cc9f0",
+    warmup: [["Riscaldamento", "1,5 km facile + 3–4 allunghi da 15\""]],
+    sections: [
+      { title: "", items: [
+        { name: "Ripetute", log: "tick",
+          w: { 1: "4×800 m", 2: "5×800 m", 3: "3×1,5 km", 4: "5×1000 m", 5: "4×1200 m", 6: "2×2,5 km", 7: "3×1600 m", 8: "TEST 5 km" },
+          tags: [
+            ["Fase", { 1: "Base", 2: "Base", 3: "Soglia (semi-scarico)", 4: "Sviluppo", 5: "Sviluppo", 6: "Soglia lunga", 7: "Specifica (volume ridotto)", 8: "Test" }],
+            ["Passo", { 1: "4:55–5:00", 2: "4:50–4:55", 3: "5:05–5:10", 4: "4:45–4:50", 5: "4:50", 6: "5:00–5:05", 7: "4:50", 8: "Push it brother" }],
+            ["Recupero", { 1: "90\" camminando", 2: "90\" camminando", 3: "90\"", 4: "2'", 5: "2'", 6: "2'", 7: "2'" }],
+            ["RPE target", { 1: "7–8", 2: "8", 3: "7", 4: "8", 5: "8", 6: "7", 7: "8", 8: "9–10" }],
+            ["Km totali*", { 1: "~5,5", 2: "~6", 3: "~6,5", 4: "~7", 5: "~7", 6: "~7,5", 7: "~6,8", 8: "~7" }]
+          ],
+          note: "Baseline 5 km: 24:52 (4:58/km) a RPE 9 · Obiettivo sett. 8: ~24:10 (4:50/km) o meglio\n* Compresi 1,5 km di riscaldamento, allunghi e 0,5–1 km di defaticamento.\nRegola: si passa alla settimana successiva se il passo è stato tenuto con RPE ≤ 8. Con RPE 9–10 o passo non tenuto, si ripete la stessa seduta.\nNon superare di oltre il 10% la distanza della corsa più lunga degli ultimi 30 giorni.",
+          extra: [["passo", "Passo reale", "text"], ["rpe", "RPE reale", "decimal"]] }
+      ]}
+    ],
+    end: [["Defaticamento", "0,5–1 km"]]
+  }
+];
+/* ===================== END PLAN DATA ===================== */
+
+/* ---------- storage (keys start with client name) ---------- */
+const K_LOG = CLIENT + ".log", K_VIEW = CLIENT + ".view";
+function load(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
+function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+let LOG = load(K_LOG, {});
+let VIEW = load(K_VIEW, { w: 1, d: 0 });
+if (!(VIEW.w >= 1 && VIEW.w <= WEEKS)) VIEW.w = 1;
+if (!(VIEW.d >= 0 && VIEW.d < DAYS.length)) VIEW.d = 0;
+
+/* ---------- helpers ---------- */
+const slug = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+const isNum = s => /^\d+([.,]\d+)?$/.test(String(s || "").trim());
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const br = s => esc(s).replace(/\n/g, "<br>");
+const pad = n => String(n).padStart(2, "0");
+const wk = (v, w) => (v != null && typeof v === "object") ? v[w] : v;     // value or {week: value}
+const CHECK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';
+
+function scheme(item, w){ return item.all != null ? item.all : (item.w ? item.w[w] : undefined); }
+const hidden = (item, w) => scheme(item, w) === "—";
+function parse(s){
+  if (s == null || s === "") return null;
+  const m = String(s).match(/^\s*(\d+)\s*[x×]\s*([^@]+?)\s*(?:@\s*(.+?))?\s*$/i);
+  if (!m) return { text: String(s) };
+  const reps = m[2].trim();
+  const r = reps.match(/^(\d+(?:\s*[-–]\s*\d+)?)(.*)$/);
+  const load = m[3] ? m[3].trim() : null;
+  let kg = null;
+  if (load){
+    const k = load.match(/(\d+(?:[.,]\d+)?)\s*kg/i);
+    if (k) kg = k[1]; else if (isNum(load)) kg = load;
+  }
+  return { sets: +m[1], reps, repsMain: r ? r[1].replace(/\s/g, "") : reps, repsSuf: r ? r[2] : "", load, kg };
+}
+function itemId(day, item){ return day.id + "." + (item.id || slug(item.name)); }
+function setCount(item, w){
+  const p = parse(scheme(item, w));
+  if (p && p.sets) return p.sets;
+  if (p && p.text) return item.rows || 1;
+  for (let x = w - 1; x >= 1; x--){ const q = parse(scheme(item, x)); if (q && q.sets) return q.sets; }
+  for (let x = w + 1; x <= WEEKS; x++){ const q = parse(scheme(item, x)); if (q && q.sets) return q.sets; }
+  return item.rows || 3;
+}
+const key = (w, id, s) => w + "|" + id + "|" + s;
+const rec = (w, id, s) => LOG[key(w, id, s)] || {};
+
+function suggest(item, id, w, s){
+  const p = parse(scheme(item, w));
+  let kg = "", reps = "";
+  if (p && p.kg) kg = p.kg;
+  if (p && p.repsMain && /^\d/.test(p.repsMain) && !/["'″]|^s\b|\bs\b|min|sec/i.test(p.repsSuf.trim())) reps = p.repsMain;
+  for (let x = w - 1; x >= 1 && (!kg || !reps); x--){
+    const r = rec(x, id, s);
+    if (!kg && r.kg) kg = r.kg;
+    if (!reps && r.reps) reps = r.reps;
+  }
+  if (!kg && item.start != null) kg = String(item.start);
+  return { kg, reps };
+}
+
+function dayStats(di, w){
+  const day = DAYS[di]; let tot = 0, done = 0;
+  day.sections.forEach(sec => sec.items.forEach(it => {
+    if (it.log === "none" || hidden(it, w)) return;
+    const id = itemId(day, it), n = setCount(it, w);
+    for (let s = 0; s < n; s++){ tot++; if (rec(w, id, s).done) done++; }
+  }));
+  return { tot, done };
+}
+
+/* ---------- render ---------- */
+const app = document.getElementById("app");
+document.getElementById("tnl").firstChild.textContent = UI.training;
+
+function list(items, w){
+  return items.map(x => { const d = wk(x[1], w); return "<li><b>" + br(x[0]) + "</b>" + (d ? br(d) : "") + "</li>"; }).join("");
+}
+
+function render(){
+  const day = DAYS[VIEW.d], w = VIEW.w;
+  document.documentElement.style.setProperty("--ac", day.color);
+  document.getElementById("wk").innerHTML = esc(UI.week) + " " + w + (WEEK_LABELS[w] ? "<small>" + esc(WEEK_LABELS[w]).toUpperCase() + "</small>" : "");
+  document.getElementById("tn").textContent = (w - 1) * DAYS.length + VIEW.d + 1;
+
+  const cols = WEEKS > 6 ? Math.ceil(WEEKS / 2) : WEEKS;
+  let h = '<div class="pick weeks" style="grid-template-columns:repeat(' + cols + ',1fr)">';
+  for (let x = 1; x <= WEEKS; x++){
+    h += '<button data-w="' + x + '" class="' + (x === w ? "on" : "") + '">' + x +
+         (WEEK_LABELS[x] ? "<small>" + esc(WEEK_LABELS[x]).toUpperCase() + "</small>" : "") + "</button>";
+  }
+  h += '</div><div class="pick days" style="grid-template-columns:repeat(' + DAYS.length + ',1fr)">';
+  DAYS.forEach((d, i) => {
+    const st = dayStats(i, w);
+    h += '<button data-d="' + i + '" style="--dc:' + d.color + '" class="' + (i === VIEW.d ? "on" : "") + '">' +
+         esc(d.label) + (st.tot && st.done === st.tot ? '<i class="dot"></i>' : "") + "</button>";
+  });
+  h += "</div>";
+
+  if (day.warmup && day.warmup.length) h += '<details class="sec"><summary>' + esc(UI.warmup) + "</summary><ul>" + list(day.warmup, w) + "</ul></details>";
+
+  let n = 0;
+  day.sections.forEach(sec => {
+    const vis = sec.items.filter(it => !hidden(it, w));
+    if (!vis.length) return;
+    if (sec.title) h += '<h2 class="sl">' + esc(sec.title) + (sec.sub ? "<span>" + esc(sec.sub) + "</span>" : "") + "</h2>";
+    vis.forEach(it => { n++; h += card(day, it, w, n); });
+  });
+
+  if (day.end && day.end.length) h += '<details class="sec"><summary>' + esc(UI.end) + "</summary><ul>" + list(day.end, w) + "</ul></details>";
+  app.innerHTML = h;
+  progress();
+  save(K_VIEW, VIEW);
+}
+
+function card(day, it, w, n){
+  const id = itemId(day, it), p = parse(scheme(it, w));
+  let h = '<article class="card"><div class="ttl"><span class="num n">' + pad(n) + "</span><h3>" + esc(it.name) + "</h3></div>";
+  if (!p){ if (it.log !== "none") h += '<div class="tgt"><span class="tbp n">' + esc(UI.tbp) + "</span></div>"; }
+  else if (p.text) h += '<div class="tgt"><span class="txt n' + (p.text.length > 40 ? " long" : "") + '">' + br(p.text) + "</span></div>";
+  else h += '<div class="tgt"><span class="big n">' + p.sets + "×" + esc(p.repsMain) +
+            (p.repsSuf ? "<small>" + esc(p.repsSuf) + "</small>" : "") + "</span>" +
+            (p.load ? '<span class="load n' + (p.load.length > 8 ? " long" : "") + '">' + esc(p.load) + "</span>" : "") + "</div>";
+
+  const tags = [];
+  if (it.tempo) tags.push(["Tempo", it.tempo]);
+  if (it.rest) tags.push(["Rest", it.rest]);
+  (it.tags || []).forEach(t => { const v = wk(t[1], w); if (v) tags.push([t[0], v]); });
+  if (tags.length) h += '<div class="tags">' + tags.map(t => '<span class="tag"><em>' + esc(t[0]) + "</em>" + esc(t[1]) + "</span>").join("") + "</div>";
+  const notes = [it.note, wk(it.wn, w)].filter(Boolean);
+  notes.forEach(x => { h += '<p class="note">' + br(x) + "</p>"; });
+
+  const showRows = it.log !== "none" && !(it.nolog || []).includes(w);
+  if (showRows){
+    const cnt = setCount(it, w);
+    h += '<div class="sets">';
+    for (let s = 0; s < cnt; s++){
+      const r = rec(w, id, s), done = r.done ? " done" : "";
+      const data = ' data-id="' + esc(id) + '" data-s="' + s + '"';
+      if (it.log === "kg"){
+        const sg = suggest(it, id, w, s);
+        h += '<div class="row' + done + '"' + data + '><span class="si n">' + (s + 1) + "</span>" +
+          '<label class="f"><input class="n" data-k="kg" inputmode="decimal" autocomplete="off" aria-label="' + (s + 1) + ' kg" value="' + esc(r.kg || "") + '" placeholder="' + esc(sg.kg) + '"><span>kg</span></label>' +
+          '<label class="f"><input class="n" data-k="reps" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="' + (s + 1) + ' reps" value="' + esc(r.reps || "") + '" placeholder="' + esc(sg.reps) + '"><span>reps</span></label>' +
+          '<button class="tick" aria-label="' + (s + 1) + ' ok">' + CHECK + "</button></div>";
+      } else {
+        const lbl = p && p.sets ? p.reps : (cnt === 1 ? UI.done : UI.set + " " + (s + 1));
+        h += '<div class="row t' + done + '"' + data + '><span class="si n">' + (s + 1) + '</span><span class="tl n">' + esc(lbl) + "</span>" +
+          '<button class="tick" aria-label="' + (s + 1) + ' ok">' + CHECK + "</button></div>";
+      }
+    }
+    h += "</div>";
+  }
+  if (it.extra && !(it.extraSkip || []).includes(w)){
+    const r = rec(w, id, "x");
+    h += '<div class="row x" data-id="' + esc(id) + '" data-s="x">' + it.extra.map(f =>
+      '<label class="f lab"><small>' + esc(f[1]) + '</small><input class="n" data-k="' + f[0] + '" inputmode="' + (f[2] || "decimal") + '" autocomplete="off" value="' + esc(r[f[0]] || "") + '"></label>').join("") + "</div>";
+  }
+  return h + "</article>";
+}
+
+function progress(){
+  const st = dayStats(VIEW.d, VIEW.w);
+  document.getElementById("bar").style.width = (st.tot ? Math.round(st.done / st.tot * 100) : 0) + "%";
+  document.querySelectorAll(".days button").forEach(b => {
+    const s = dayStats(+b.dataset.d, VIEW.w), full = s.tot && s.done === s.tot, dot = b.querySelector(".dot");
+    if (full && !dot){ const e = document.createElement("i"); e.className = "dot"; b.appendChild(e); }
+    if (!full && dot) dot.remove();
+  });
+}
+
+function put(id, s, patch){
+  const k = key(VIEW.w, id, s), r = Object.assign({}, LOG[k] || {}, patch);
+  Object.keys(r).forEach(x => { if (r[x] === "" || r[x] === false) delete r[x]; });
+  if (Object.keys(r).length) LOG[k] = r; else delete LOG[k];
+  save(K_LOG, LOG);
+}
+
+/* ---------- events ---------- */
+app.addEventListener("click", e => {
+  const wb = e.target.closest("[data-w]");
+  if (wb){ VIEW.w = +wb.dataset.w; render(); return; }
+  const db = e.target.closest("[data-d]");
+  if (db){ VIEW.d = +db.dataset.d; render(); window.scrollTo(0, 0); return; }
+  const tb = e.target.closest(".tick");
+  if (!tb) return;
+  const row = tb.closest(".row"), id = row.dataset.id, s = +row.dataset.s;
+  if (rec(VIEW.w, id, s).done){ put(id, s, { done: false }); row.classList.remove("done"); progress(); return; }
+  for (const inp of row.querySelectorAll("input")){
+    if (inp.value.trim() !== "") continue;
+    const sg = inp.placeholder.trim();
+    if (sg === "") continue;
+    if (isNum(sg)){ inp.value = sg; put(id, s, { [inp.dataset.k]: sg }); }
+    else { inp.focus(); return; }            // range: client types the real number
+  }
+  put(id, s, { done: true });
+  row.classList.add("done");
+  progress();
+});
+
+app.addEventListener("input", e => {
+  const inp = e.target.closest("input[data-k]");
+  if (!inp) return;
+  const row = inp.closest(".row"), s = row.dataset.s;
+  put(row.dataset.id, s === "x" ? "x" : +s, { [inp.dataset.k]: inp.value.trim() });
+});
+
+render();
+</script>
+</body>
+</html>
